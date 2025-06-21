@@ -32,8 +32,10 @@ jobs:
           newman run "Inwarranty-flow Collection.postman_collection.json" \
             -e QA.postman_environment.json \
             -r cli,htmlextra
+            --reporter-htmlextra-export newman/report.html
 
-      - name: Upload Newman HTML Report
+      - name: Newman Report
+        if: always() # ensure that the archive executed irrespective whether the prev step has passed or not
         uses: actions/upload-artifact@v4.3.1
         with:
           name: Newman Report
