@@ -1,0 +1,34 @@
+name : Postman Collection Workflow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron : 30 02 * * * # 8am ist everday
+    - cron : 00 14 * * * # 730 pm ist everyday
+    - cron : 00 06 * * 1-5 # 1130 am ist 1-5 means mon to fri
+jobs:
+  run-postman-tests: #name of job
+   runs-on: ubuntu-latest #selecting machine
+steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4.2.2
+
+    - name: Install Nodejs and npm
+      uses: gacts/setup-node-with-cache@v1.2.2
+      with:
+        node-version: '22'
+
+    - name: Install Newman and html extra lib
+      run : |
+        npm install -g newman
+        npm install -g newman-reporter-htmlextra
+
+    - name: Run the Postman collection with newman  #no whitespace so no need to put in single quote
+      run: | 
+           newman run 'Inwarranty-flow Collection.postman_collection.json' \
+           -e QA.postman_environment.json\
+           -d testdata.csv \
+           -r cli,htmlextra
+      
